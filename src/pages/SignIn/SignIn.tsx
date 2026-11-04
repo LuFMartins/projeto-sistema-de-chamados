@@ -1,6 +1,6 @@
 import "./singin.css"
 import logo from "../../assets/logo-sistema-de-chamados.png"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Link, useNavigate} from "react-router-dom"
 import { auth } from "../../services/firebaseConnection"
 import { signInWithEmailAndPassword } from "firebase/auth"
