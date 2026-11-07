@@ -1,15 +1,17 @@
-import {auth} from "../../services/firebaseConnection"
-import { signOut } from "firebase/auth"
+import {useAuth} from '../../contexts/AuthContext'
 
 export default function Dashbord() {
 
+   const {signOutUser, user} = useAuth()
+
    async function handleLogout(){
-      await signOut(auth)
+      signOutUser()
    }
 
    return(
       <div>
          <h1>Dashbord</h1>
+         <p>{user?.email}</p>
          <button onClick={handleLogout}>Sair</button>
       </div>
    )

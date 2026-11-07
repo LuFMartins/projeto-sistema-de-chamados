@@ -1,35 +1,19 @@
 import "./singin.css"
 import logo from "../../assets/logo-sistema-de-chamados.png"
-import { useState, useEffect } from "react"
-import { Link, useNavigate} from "react-router-dom"
-import { auth } from "../../services/firebaseConnection"
-import { signInWithEmailAndPassword } from "firebase/auth"
-import {toast} from 'react-toastify'
+import { useState } from "react"
+import { Link } from "react-router-dom"
+import { useAuth } from '../../contexts/AuthContext'
+
 
 export default function SignIn() {
 
    const [email, setEmail] = useState('')
    const [password, setPassword] = useState('')
-   const navigate = useNavigate()
+   const { signIn } = useAuth()
 
    async function handleLogin(e: React.SubmitEvent<HTMLFormElement>) {
       e.preventDefault();
-
-      try {
-         const userCredential = await signInWithEmailAndPassword(auth, email, password)
-
-         if (userCredential.user) {
-            toast.success("Usuário logado com sucesso!")
-            navigate('/dashboard')
-         } else {
-            throw new Error("Erro ao fazer login!")
-         }
-      } catch (error) {
-         console.log(error)
-         if(error instanceof Error) {
-            toast.error(error.message)
-         }
-      }
+      signIn(email, password)
    }
 
    return (
