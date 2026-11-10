@@ -2,7 +2,7 @@ import {useAuth} from '../../contexts/AuthContext'
 
 export default function Dashbord() {
 
-   const {signOutUser, user} = useAuth()
+   const {signOutUser, user, nameUser} = useAuth()
 
    async function handleLogout(){
       signOutUser()
@@ -11,6 +11,7 @@ export default function Dashbord() {
    return(
       <div>
          <h1>Dashbord</h1>
+         <h3>{nameUser}</h3>
          <p>{user?.email}</p>
          <button onClick={handleLogout}>Sair</button>
       </div>
