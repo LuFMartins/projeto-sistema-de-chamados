@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
 import type { User } from "firebase/auth"
-import { onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword} from "firebase/auth"
+import { onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword } from "firebase/auth"
 import { auth, db } from "../services/firebaseConnection"
 import { useNavigate } from "react-router-dom"
 import { toast } from "react-toastify"
@@ -40,6 +40,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
             const userSnapshot = await getDoc(userRef)
 
             setNameUser(userSnapshot.data()?.name)
+         } else {
+            setNameUser('')
          }
 
          setLoading(false)
@@ -63,7 +65,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
          await setDoc(doc(db, '@users', uid), {
             name: name,
-            email: email
+            email: email,
+            data: new Date()
          })
 
          setNameUser(name)
@@ -115,7 +118,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
    // Encerrar Sessão Do Usuario
    async function signOutUser() {
-      await signOut(auth)
+      try {
+
+         const confirmacao = confirm('Deseja fazer o logOut?')
+
+         if (confirmacao) {
+            await signOut(auth)
+         }
+
+      } catch (error) {
+         toast.error('Não foi possivel realizer o logOut!')
+      }
    }
 
    return (

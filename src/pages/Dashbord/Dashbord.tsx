@@ -1,14 +1,14 @@
-import {useAuth} from '../../contexts/AuthContext'
+import { useAuth } from '../../contexts/AuthContext'
 
 export default function Dashbord() {
 
-   const {signOutUser, user, nameUser} = useAuth()
+   const { signOutUser, user, nameUser } = useAuth()
 
-   async function handleLogout(){
+   async function handleLogout() {
       signOutUser()
    }
 
-   return(
+   return (
       <div>
          <h1>Dashbord</h1>
          <h3>{nameUser}</h3>

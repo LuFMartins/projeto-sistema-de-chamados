@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { Navigate } from "react-router-dom"
-import {onAuthStateChanged} from "firebase/auth"
+import { onAuthStateChanged } from "firebase/auth"
 import { auth } from "../services/firebaseConnection"
 
 export default function GuestOnly({ children }: { children: React.ReactNode }) {
@@ -10,9 +10,9 @@ export default function GuestOnly({ children }: { children: React.ReactNode }) {
 
    async function checkLogin() {
       console.log("Verificando login do usuário...")
-      
+
       const unsubscribe = onAuthStateChanged(auth, (user: any) => {
-         if(user){
+         if (user) {
             const userData = {
                uid: user.uid,
                email: user.email,
@@ -31,24 +31,24 @@ export default function GuestOnly({ children }: { children: React.ReactNode }) {
 
       return unsubscribe;
    }
-   
+
    useEffect(() => {
       checkLogin()
    }, [])
 
-   
-   if(loading) {
-      return(<div>Carregando...</div>)
+
+   if (loading) {
+      return (<div>Carregando...</div>)
    }
 
-   if(signed) {
+   if (signed) {
       return <Navigate to="/dashboard" />
    }
 
-    return (
-        <div>
-            {children}
-        </div>
-    )
+   return (
+      <div>
+         {children}
+      </div>
+   )
 
 }
