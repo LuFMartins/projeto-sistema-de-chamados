@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
 import type { User } from "firebase/auth"
-import { onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword } from "firebase/auth"
+import { onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword} from "firebase/auth"
 import { auth, db } from "../services/firebaseConnection"
 import { useNavigate } from "react-router-dom"
 import { toast } from "react-toastify"
@@ -17,7 +17,7 @@ interface AuthContextType {
 }
 
 type AuthProviderProps = {
-   children : ReactNode
+   children: ReactNode
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -69,7 +69,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
          setNameUser(name)
 
          toast.success('Cadastro realizado com sucesso!')
-         navigate('/')
+         navigate('/', { replace: true })
 
       } catch (error: any) {
          if (error instanceof Error)
@@ -84,31 +84,34 @@ export function AuthProvider({ children }: AuthProviderProps) {
          const userCredential = await signInWithEmailAndPassword(auth, email, password)
          if (userCredential.user) {
             setLoading(false)
-            navigate('/dashbord')
+            navigate('/dashbord', { replace: true })
             toast.success('Seja Bem-vindo(a)!')
          }
       } catch (error) {
          const firebaseError = error as any
 
-         if (firebaseError.code === 'auth/invalid-credential') {
-            toast.error('Email ou Senha Incorretos')
-         }
-         if (firebaseError.code === 'auth/too-many-requests') {
-            toast.error('O acesso foi temporariamente bloqueado devido a muitas tentativas consecutivas')
-         }
-         if (firebaseError.code === 'auth/missing-password') {
-            toast.error('Esperando a senha')
-         }
-         if (firebaseError.code === 'auth/invalid-email') {
-            toast.error('Campo de email vazio ou email invalido!')
-         }
-         if (firebaseError.code === 'auth/network-request-failed') {
-            toast.error('Erro de Conexão')
+         switch (firebaseError.code) {
+            case 'auth/invalid-credential':
+               toast.error('Email ou Senha Incorretos')
+               break
+            case 'auth/too-many-requests':
+               toast.error('O acesso foi temporariamente bloqueado devido a muitas tentativas consecutivas')
+               break
+            case 'auth/missing-password':
+               toast.error('Esperando a senha')
+               break
+            case 'auth/invalid-email':
+               toast.error('Campo de email vazio ou email invalido!')
+               break
+            case 'auth/network-request-failed':
+               toast.error('Erro de Conexão')
+               break
+            default:
+               toast.error('Não foi possivel realizar o login')
          }
       }
 
    }
-
 
    // Encerrar Sessão Do Usuario
    async function signOutUser() {
