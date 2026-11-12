@@ -9,7 +9,7 @@ export default function HeaderBar() {
 
    return (
       <header>
-         <h1>Sistema de Chamados</h1>
+         <img src="src\assets\logo-branca-500.png" alt="Logo" width={200}/>
 
          <p>Olá, <strong>{nameUser}!</strong></p>
 
