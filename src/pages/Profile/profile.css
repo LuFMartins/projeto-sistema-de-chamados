@@ -1,15 +1,3 @@
-.appLayout{
-   display: flex;
-   flex-direction: row;
-}
-
-@media (max-width: 800px) {
-   .appLayout {
-      display: flex;
-      flex-direction: column;
-   }
-}
-
 .formUser{
    display: flex;
    flex-direction: column;

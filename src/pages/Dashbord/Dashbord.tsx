@@ -5,7 +5,7 @@ import { FiHome } from 'react-icons/fi'
 export default function Dashbord() {
 
    return (
-      <div>
+      <div className='appLayout'>
          <HeaderBar />
          <div className='content'>
             <TitleBar

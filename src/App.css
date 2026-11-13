@@ -9,6 +9,18 @@ body{
    background: rgba(231, 231, 231, 0.658);
 }
 
+.appLayout{
+   display: flex;
+   flex-direction: row;
+}
+
+@media (max-width: 800px) {
+   .appLayout {
+      display: flex;
+      flex-direction: column;
+   }
+}
+
 .content{
    padding: 15px;
    flex:1;
