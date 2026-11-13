@@ -5,6 +5,7 @@ import SignUp from '../pages/SignUp/SignUp'
 import Dashbord from '../pages/Dashbord/Dashbord'
 import Private from './Private'
 import GuestOnly from './GuestOnly'
+import Profile from '../pages/Profile/Profile'
 
 export default function RoutesApp() {
    return (
@@ -24,6 +25,12 @@ export default function RoutesApp() {
          <Route path="/dashboard" element={
             <Private>
                <Dashbord />
+            </Private>
+         } />
+
+         <Route path="/profile" element={
+            <Private>
+               <Profile />
             </Private>
          } />
 

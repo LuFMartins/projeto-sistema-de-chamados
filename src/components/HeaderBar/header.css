@@ -1,41 +1,82 @@
 header {
    display: flex;
+   flex-direction: column;
+   left: 0px;
+   width: 250px;
    align-items: center;
-   justify-content: space-around;
-   background: linear-gradient(90deg, rgb(42, 82, 155) 0%,rgb(46, 90, 170) 50%, rgb(54, 103, 196) 100%);
+   justify-content: space-between;
+   padding: 30px 0px;
+   background: linear-gradient(90deg, rgb(42, 82, 155) 0%, rgb(46, 90, 170) 50%, rgb(54, 103, 196) 100%);
    color: white;
-   min-height: 80px;
+   height: 100dvh;
    box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.404);
+}
+
+.topHeader {
+   display: flex;
+   flex-direction: column;
+   width: 100%;
+   align-items: center;
+
 }
 
 nav {
    display: flex;
    align-items: center;
+   flex-direction: column;
+   gap: 20px;
+   width: 80%;
 }
 
 header a {
    color: white;
    text-decoration: none;
    gap: 5px;
-   margin-left: 15px;
    align-items: center;
    display: flex;
    align-items: center;
    font-size: 17px;
+   width: 100%;
+   padding: 15px;
+   border-radius: 10px;
+}
+
+header a.active {
+   text-shadow: 0px 0px 5px rgb(255, 255, 255);
+   background-color: #274a8b;
 }
 
 header a:hover {
    text-shadow: 0px 0px 5px rgb(255, 255, 255);
-   text-decoration: dotted underline;
+   background-color: #274a8b;
 }
 
-header img{
-   padding: 10px 0px;
+header img {
+   padding-bottom: 30px;
+   margin-bottom: 30px;
+   border-bottom: 1px solid white;
 }
 
 @media (max-width: 800px) {
+
    header {
-      flex-direction: column;
+      flex-direction: row;
+      height: 100px;
+      width: 100%;
+   }
+
+   .topHeader {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      justify-content: space-around;
+   }
+
+   header img {
+      padding-bottom: 0px;
+      margin-bottom: 0px;
+      border-bottom: none;
    }
 
    h1 {
@@ -43,19 +84,36 @@ header img{
    }
 
    nav {
-      width: 100%;
+      flex-direction: row;
+      width: 50%;
       padding: 10px;
-      margin-top: 20px;
       align-items: center;
       justify-content: center;
-      gap: 20px;
-      border-top: 1px solid rgba(255, 255, 255, 0.479);
-      background-color: #274a8b;
+      gap: 5px;
+   }
+
+   header p {
+      display: none;
    }
 
 }
 
-@media (max-width: 450px) {
+@media (max-width: 600px) {
+
+   header {
+      height: auto;
+   }
+
+   .topHeader {
+      flex-direction: column;
+   }
+
+   header img {
+      padding-bottom: 20px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.37);
+   }
+
    h1 {
       font-size: 1.5em;
    }
@@ -63,7 +121,7 @@ header img{
    nav {
       flex-direction: column;
       padding: 0px;
-      gap: 0px
+      gap: 5px
    }
 
    nav a {
@@ -71,11 +129,11 @@ header img{
       justify-content: center;
       padding: 10px;
       margin: 0px;
-
+      align-items: center;
    }
 
    nav a:hover {
-      background-color: #325fb4;
+      background-color: #274a8b;
    }
 
 }

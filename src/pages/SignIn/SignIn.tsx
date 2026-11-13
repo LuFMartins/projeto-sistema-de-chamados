@@ -23,7 +23,7 @@ export default function SignIn() {
                <img src={logo} alt="Logo Chamados" width={150} height={150} />
             </div>
 
-            <form onSubmit={handleLogin}>
+            <form onSubmit={handleLogin} className="signForm">
                <h1>Entrar</h1>
 
                <input

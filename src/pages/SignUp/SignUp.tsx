@@ -27,7 +27,7 @@ export default function SignUp() {
                <img src={logo} alt="Logo Chamados" width={150} height={150} />
             </div>
 
-            <form onSubmit={handleSignUp}>
+            <form onSubmit={handleSignUp} className="signForm">
                <h1>Cadastrar</h1>
 
                <input type="text"

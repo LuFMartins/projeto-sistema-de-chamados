@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
+import { createContext, useContext, useEffect, useState, type Dispatch, type ReactNode, type SetStateAction } from "react"
 import type { User } from "firebase/auth"
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword } from "firebase/auth"
 import { auth, db } from "../services/firebaseConnection"
@@ -9,11 +9,12 @@ import { doc, getDoc, setDoc } from "firebase/firestore"
 interface AuthContextType {
    user: User | null,
    nameUser: string,
+   setNameUser: Dispatch<SetStateAction<string>>,
    signed: boolean,
    signUp: (name: string, email: string, password: string) => Promise<void>,
    signIn: (email: string, password: string) => Promise<void>,
    signOutUser: () => Promise<void>,
-   loading: boolean
+   loading: boolean,
 }
 
 type AuthProviderProps = {
@@ -132,7 +133,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
    }
 
    return (
-      <AuthContext.Provider value={{ user, signed, signUp, signIn, signOutUser, loading, nameUser }}>
+      <AuthContext.Provider value={{ user, signed, signUp, signIn, signOutUser, loading, nameUser, setNameUser}}>
          {children}
       </AuthContext.Provider>
    )

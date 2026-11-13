@@ -20,7 +20,7 @@
    padding-bottom: 30px;
 }
 
-form{
+.signForm{
    display: flex;
    flex-direction: column;
    align-items: center;
@@ -29,7 +29,7 @@ form{
    padding: 20px;
 }
 
-form > input, form > button{
+.signForm > input, form > button{
    width: 80%;
    padding: 10px;
    margin: 10px 0;
@@ -37,7 +37,7 @@ form > input, form > button{
    border-radius: 4px;
 }
 
-form > button{
+.signForm > button{
    background-color: #325fb4;
    color: white;
    border: none;
@@ -45,7 +45,7 @@ form > button{
    font-size: 18px;
 }
 
-form > button:hover{
+.signForm > button:hover{
    background-color: #274a8c;
 }
 

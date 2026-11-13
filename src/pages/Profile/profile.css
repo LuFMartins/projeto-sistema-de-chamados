@@ -1,0 +1,66 @@
+.appLayout{
+   display: flex;
+   flex-direction: row;
+}
+
+@media (max-width: 800px) {
+   .appLayout {
+      display: flex;
+      flex-direction: column;
+   }
+}
+
+.formUser{
+   display: flex;
+   flex-direction: column;
+   width: 50%;
+   justify-content: center;
+   margin: auto;
+   gap: 5px;
+}
+
+.formUser input{
+   padding: 10px;
+   border-radius: 5px;
+   border: 1px solid rgba(0, 0, 0, 0.315);
+   margin-bottom: 15px;
+}
+
+.btSaveInfo{
+   width: 150px;
+   background-color: midnightblue;
+   color: white;
+   font-size: 1.2em;
+   cursor: pointer;
+}
+
+.btSaveInfo:hover{
+   background-color: rgb(38, 38, 168);
+
+}
+
+.profileContainer{
+   background-color: white;
+   padding: 20px;
+   border-radius: 10px;
+   margin-bottom: 15px;
+}
+
+.btLogOut{
+   display: block;
+   position: absolute;
+   bottom: 30px;
+   right: 30px;
+   width: 60px;
+   height: 60px;
+   border-radius: 100%;
+   background-color: crimson;
+   color: white;
+   font-weight: bold;
+   box-shadow: 2px 3px 5px rgba(0, 0, 0, 0.397);
+}
+
+.btLogOut:hover{
+   background-color:rgb(172, 16, 47);
+   cursor: pointer;
+}
