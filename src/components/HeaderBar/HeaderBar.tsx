@@ -15,7 +15,7 @@ export default function HeaderBar() {
             
                <NavLink to="/dashboard" >
                   <FiHome color="white" size={20} />
-                  Home
+                  Chamados
                </NavLink>
                <NavLink to="/customers">
                   <FiUser color="white" size={20} />

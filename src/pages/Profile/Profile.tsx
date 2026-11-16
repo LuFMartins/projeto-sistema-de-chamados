@@ -53,7 +53,7 @@ export default function Profile() {
                title="Perfil"
             />
 
-            <div className='profileContainer'>
+            <div className='formContainer'>
                <form className='formUser' onSubmit={handleUpdateName}>
                   <label>Nome</label>
                   <input type="text" placeholder={nameUser} value={upName} onChange={(e) => setUpName(e.target.value)} />

@@ -1,15 +1,15 @@
-*{
+* {
    padding: 0px;
    margin: 0px;
    box-sizing: border-box;
    font-family: 'Poppins', sans-serif;
 }
 
-body{
+body {
    background: rgba(231, 231, 231, 0.658);
 }
 
-.appLayout{
+.appLayout {
    display: flex;
    flex-direction: row;
 }
@@ -21,7 +21,9 @@ body{
    }
 }
 
-.content{
-   padding: 15px;
-   flex:1;
+.content {
+   display: flex;
+   flex-direction: column;
+   flex: 1;
+   padding: 20px;
 }

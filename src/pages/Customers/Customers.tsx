@@ -1,15 +1,13 @@
 import HeaderBar from '../../components/HeaderBar/HeaderBar'
 import TitleBar from '../../components/TitleBar/TitleBar'
 import { FiUser } from 'react-icons/fi'
-import { useAuth } from '../../contexts/AuthContext'
 import { useState } from 'react'
 import { toast } from 'react-toastify'
-import { updateDoc, doc, setDoc, addDoc, collection } from 'firebase/firestore'
+import { addDoc, collection } from 'firebase/firestore'
 import { db } from '../../services/firebaseConnection'
 
 export default function Customers() {
 
-   const { signOutUser, user, nameUser, setNameUser } = useAuth()
    const [nomeEmpresa, setNomeEmpresa] = useState('')
    const [cnpj, setCnpj] = useState('')
    const [endereco, setEndereco] = useState('')
@@ -18,7 +16,7 @@ export default function Customers() {
    async function handleCreateCustomers(e: React.SubmitEvent<HTMLFormElement>) {
       e.preventDefault()
 
-      if(nomeEmpresa.trim() === "" || cnpj.trim() === "" || endereco.trim() === ""){
+      if (nomeEmpresa.trim() === "" || cnpj.trim() === "" || endereco.trim() === "") {
          toast.info('Preencha todos os campos!')
          return;
       }
@@ -31,7 +29,7 @@ export default function Customers() {
             cnpj: cnpj,
             endereco: endereco
          })
-         
+
          toast.success('Registro realizado com sucesso!')
 
          setNomeEmpresa('')
@@ -56,7 +54,7 @@ export default function Customers() {
                title="Clientes"
             />
 
-            <div className='profileContainer'>
+            <div className='formContainer'>
 
                <form className='formUser' onSubmit={handleCreateCustomers}>
 
@@ -80,8 +78,6 @@ export default function Customers() {
                </form>
 
             </div>
-
-            <button onClick={signOutUser} className='btLogOut'>SAIR</button>
 
          </div>
 

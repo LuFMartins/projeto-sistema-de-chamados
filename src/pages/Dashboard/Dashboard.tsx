@@ -4,7 +4,7 @@ import { FiEdit2, FiMessageSquare, FiPlus, FiSearch } from 'react-icons/fi'
 import { NavLink } from 'react-router-dom'
 import "./dashboard.css"
 
-export default function Dashbord() {
+export default function Dashboard() {
 
    return (
       <div className='appLayout'>
