@@ -1,0 +1,65 @@
+.formContainerNew{
+   background-color: white;
+   border-radius: 15px;
+   padding: 15px;
+   display: flex;
+   flex-direction: column;
+   gap: 15px;
+}
+
+.formContainerNew select{
+   width: fit-content;
+}
+.formContainerNew label{
+   font-size: 1.2em;
+   letter-spacing: 1px;
+}
+
+.formContainerNew select, .formContainerNew textarea{
+   border: 1px solid #ddd;
+   padding: 10px;
+   border-radius: 5px;
+}
+
+.formContainerNew textarea{
+   min-height: 200px;
+   max-width: 600px;
+}
+
+
+.formContainerNew .status{
+   display: flex;
+   gap: 15px;
+}
+
+@media screen and (max-width: 600px) {
+   .status{
+      flex-direction: column;
+   }
+}
+
+.status label{
+   font-size: 1em;
+   font-style: italic;
+   
+   input{
+      margin-right: 5px;
+   }
+}
+
+.btNewChamado{
+   width: 100%;
+   max-width: 600px;
+   background-color: #191970;
+   color: white;
+   font-size: 1.2em;
+   cursor:pointer;
+   box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.300);
+   border: none;
+}
+
+.btNewChamado:hover{
+   transform: scale(1.01,1.01);
+   background-color: #1d1d81;
+   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.300);
+}

@@ -7,6 +7,7 @@ import Private from './Private'
 import GuestOnly from './GuestOnly'
 import Profile from '../pages/Profile/Profile'
 import Customers from '../pages/Customers/Customers'
+import New from '../pages/New/New'
 
 export default function RoutesApp() {
    return (
@@ -38,6 +39,12 @@ export default function RoutesApp() {
          <Route path="/customers" element={
             <Private>
                <Customers />
+            </Private>
+         } />
+
+         <Route path="/new" element={
+            <Private>
+               <New />
             </Private>
          } />
 
