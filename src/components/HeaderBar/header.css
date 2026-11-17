@@ -3,7 +3,6 @@ header {
    flex-direction: column;
    left: 0px;
    width: 250px;
-   flex-shrink: 0;
    align-items: center;
    justify-content: space-between;
    padding: 30px 0px;
@@ -11,8 +10,6 @@ header {
    color: white;
    height: 100dvh;
    box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.404);
-   position: sticky;
-   top: 0px;
 }
 
 .topHeader {
