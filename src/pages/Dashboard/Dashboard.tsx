@@ -1,7 +1,7 @@
 import HeaderBar from '../../components/HeaderBar/HeaderBar'
 import TitleBar from '../../components/TitleBar/TitleBar'
 import { FiEdit2, FiMessageSquare, FiPlus, FiSearch } from 'react-icons/fi'
-import { NavLink } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 import "./dashboard.css"
 import { useEffect, useState } from 'react'
 import { getDocs, collection, query, orderBy, limit } from 'firebase/firestore'
@@ -14,7 +14,7 @@ interface CallsProps {
    status: string,
    created: Timestamp,
    complemento: string | null,
-   userId: string
+   id: string
 }
 
 export default function Dashboard() {
@@ -28,32 +28,28 @@ export default function Dashboard() {
          const ref = collection(db, "@calls")
          const q = query(ref, orderBy('created', 'desc'), limit(10))
 
-         const querySnap = await getDocs(q)
-
          try {
+            const querySnap = await getDocs(q)
             const lista: CallsProps[] = querySnap.docs.map((documento) => {
 
                const dado = documento.data()
-
                return {
-                  cliente: dado.cliente,
+                  cliente: dado.clienteName,
                   assunto: dado.assunto,
                   complemento: dado.complemento,
                   status: dado.status,
                   created: dado.created,
-                  userId: dado.uid
+                  id: documento.id
                }
             })
-
-            setCalls(q => [...q, ...lista])
+            setCalls(lista)
             setLoading(false)
 
          } catch (error) {
             setCalls([])
+         } finally {
+            setLoading(false)
          }
-
-
-
       }
 
       handleCalls()
@@ -120,8 +116,8 @@ export default function Dashboard() {
                         </thead>
                         <tbody>
 
-                           {calls?.map((item, index) => (
-                              <tr key={index}>
+                           {calls?.map((item) => (
+                              <tr key={item.id}>
                                  <td data-label="Cliente">{item.cliente}</td>
                                  <td data-label="Assunto">{item.assunto}</td>
                                  <td data-label={item.status}>
@@ -135,9 +131,9 @@ export default function Dashboard() {
                                     <button className='action' style={{ backgroundColor: "#3583f6" }}>
                                        <FiSearch color='white' size={15} />
                                     </button>
-                                    <button className='action' style={{ backgroundColor: "#f6a935" }}>
+                                    <Link to={`/new/${item.id}`} className='action' style={{ backgroundColor: "#f6a935" }}>
                                        <FiEdit2 color='white' size={15} />
-                                    </button>
+                                    </Link >
                                  </td>
                               </tr>
                            ))}
