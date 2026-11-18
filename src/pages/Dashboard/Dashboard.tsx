@@ -3,8 +3,80 @@ import TitleBar from '../../components/TitleBar/TitleBar'
 import { FiEdit2, FiMessageSquare, FiPlus, FiSearch } from 'react-icons/fi'
 import { NavLink } from 'react-router-dom'
 import "./dashboard.css"
+import { useEffect, useState } from 'react'
+import { getDocs, collection, query, orderBy, limit } from 'firebase/firestore'
+import { db } from '../../services/firebaseConnection'
+import { Timestamp } from 'firebase/firestore'
+
+interface CallsProps {
+   cliente: string,
+   assunto: string,
+   status: string,
+   created: Timestamp,
+   complemento: string | null,
+   userId: string
+}
 
 export default function Dashboard() {
+
+   const [calls, setCalls] = useState<CallsProps[]>([])
+   const [loading, setLoading] = useState(true)
+
+   useEffect(() => {
+      async function handleCalls() {
+
+         const ref = collection(db, "@calls")
+         const q = query(ref, orderBy('created', 'desc'), limit(10))
+
+         const querySnap = await getDocs(q)
+
+         try {
+            const lista: CallsProps[] = querySnap.docs.map((documento) => {
+
+               const dado = documento.data()
+
+               return {
+                  cliente: dado.cliente,
+                  assunto: dado.assunto,
+                  complemento: dado.complemento,
+                  status: dado.status,
+                  created: dado.created,
+                  userId: dado.uid
+               }
+            })
+
+            setCalls(q => [...q, ...lista])
+            setLoading(false)
+
+         } catch (error) {
+            setCalls([])
+         }
+
+
+
+      }
+
+      handleCalls()
+   }, [])
+
+
+   if (loading) {
+      return (
+         <div className='appLayout'>
+            <HeaderBar />
+            <div className='content'>
+               <TitleBar
+                  icon={FiMessageSquare}
+                  title='Tickets'
+               />
+
+               <div className='noCalls'>
+                  <span>Buscando Chamados...</span>
+               </div>
+            </div>
+         </div>
+      )
+   }
 
    return (
       <div className='appLayout'>
@@ -17,65 +89,64 @@ export default function Dashboard() {
 
 
             <div>
-               <NavLink to="/new" className='btNovoChamado'>
-                  <FiPlus color='white' size={25} />
-                  novo chamado
-               </NavLink>
 
-               <table>
-                  <thead>
-                     <tr>
-                        <th scope='col'>Cliente</th>
-                        <th scope='col'>Assunto</th>
-                        <th scope='col'>Status</th>
-                        <th scope='col'>Cadastrado em</th>
-                        <th scope='col'>#</th>
-                     </tr>
-                  </thead>
-                  <tbody>
-                     <tr>
-                        <td data-label="Cliente">Mercado Livre</td>
-                        <td data-label="Assunto">Suporte</td>
-                        <td data-label="Status"
-                           className='badge'
-                           style={{ backgroundColor: "#999" }}>
-                           <span>
-                              Em Aberto
-                           </span>
-                        </td>
-                        <td data-label="Cadastrado em">12/05/2026</td>
-                        <td data-label="#">
-                           <button className='action' style={{ backgroundColor: "#3583f6" }}>
-                              <FiSearch color='white' size={15} />
-                           </button>
-                           <button className='action' style={{ backgroundColor: "#f6a935" }}>
-                              <FiEdit2 color='white' size={15} />
-                           </button>
-                        </td>
-                     </tr>
 
-                     <tr>
-                        <td data-label="Cliente">Mercado Livre</td>
-                        <td data-label="Assunto">Suporte</td>
-                        <td data-label="Status"
-                           className='badge'
-                           style={{ backgroundColor: "#999" }}>
-                           <span>
-                              Em Aberto
-                           </span>
-                        </td>
-                        <td data-label="Cadastrado em">12/05/2026</td>
-                        <td data-label="#">
-                           <button className='action' style={{ backgroundColor: "#3583f6" }}>
-                              <FiSearch color='white' size={15} />
-                           </button>
-                           <button className='action' style={{ backgroundColor: "#f6a935" }}>
-                              <FiEdit2 color='white' size={15} />
-                           </button>
-                        </td>
-                     </tr>
-                  </tbody>
-               </table>
+               {calls?.length === 0 ? (
+                  <div className='noCalls'>
+                     <span>Nenhum chamado encontrado!</span>
+                     <NavLink to="/new" className='btNovoChamado'>
+                        <FiPlus color='white' size={25} />
+                        novo chamado
+                     </NavLink>
+                  </div>
+               ) : (
+
+                  <>
+
+                     <NavLink to="/new" className='btNovoChamado'>
+                        <FiPlus color='white' size={25} />
+                        novo chamado
+                     </NavLink>
+
+                     <table>
+                        <thead>
+                           <tr>
+                              <th scope='col'>Cliente</th>
+                              <th scope='col'>Assunto</th>
+                              <th scope='col'>Status</th>
+                              <th scope='col'>Cadastrado em</th>
+                              <th scope='col'></th>
+                           </tr>
+                        </thead>
+                        <tbody>
+
+                           {calls?.map((item, index) => (
+                              <tr key={index}>
+                                 <td data-label="Cliente">{item.cliente}</td>
+                                 <td data-label="Assunto">{item.assunto}</td>
+                                 <td data-label={item.status}>
+                                    <span className='status'>
+                                       {item.status}
+                                    </span>
+                                 </td>
+                                 <td data-label="Cadastrado em">{item.created.toDate().toLocaleString('pt-BR')}</td>
+
+                                 <td>
+                                    <button className='action' style={{ backgroundColor: "#3583f6" }}>
+                                       <FiSearch color='white' size={15} />
+                                    </button>
+                                    <button className='action' style={{ backgroundColor: "#f6a935" }}>
+                                       <FiEdit2 color='white' size={15} />
+                                    </button>
+                                 </td>
+                              </tr>
+                           ))}
+
+                        </tbody>
+                     </table>
+                  </>
+               )
+               }
             </div>
 
 
