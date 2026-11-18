@@ -21,6 +21,8 @@ export default function Dashboard() {
 
    const [calls, setCalls] = useState<CallsProps[]>([])
    const [loading, setLoading] = useState(true)
+   
+   const [isEmpty, setIsEmpty] = useState(false)
 
    useEffect(() => {
       async function handleCalls() {
@@ -30,6 +32,12 @@ export default function Dashboard() {
 
          try {
             const querySnap = await getDocs(q)
+            console.log(querySnap.docs)
+
+            if(querySnap.docs.length === 0){
+               throw new Error('Nenhum chamado encontrado!')
+            }
+
             const lista: CallsProps[] = querySnap.docs.map((documento) => {
 
                const dado = documento.data()
@@ -46,7 +54,11 @@ export default function Dashboard() {
             setLoading(false)
 
          } catch (error) {
+            if (error instanceof Error){
+               console.log(error.message)
+            }
             setCalls([])
+            setIsEmpty(true)
          } finally {
             setLoading(false)
          }
@@ -87,7 +99,7 @@ export default function Dashboard() {
             <div>
 
 
-               {calls?.length === 0 ? (
+               {isEmpty ? (
                   <div className='noCalls'>
                      <span>Nenhum chamado encontrado!</span>
                      <NavLink to="/new" className='btNovoChamado'>
