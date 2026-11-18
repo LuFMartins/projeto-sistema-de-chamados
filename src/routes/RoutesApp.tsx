@@ -48,6 +48,12 @@ export default function RoutesApp() {
             </Private>
          } />
 
+         <Route path="/new/:id" element={
+            <Private>
+               <New />
+            </Private>
+         } />
+
          <Route path="*" element={<div>Página não encontrada</div>} />
       </Routes>
    )
