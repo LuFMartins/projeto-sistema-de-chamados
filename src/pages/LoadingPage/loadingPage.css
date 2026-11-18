@@ -1,0 +1,19 @@
+.loadingPage {
+   display: flex;
+   background: linear-gradient(90deg, rgb(42, 82, 155) 0%, rgb(46, 90, 170) 50%, rgb(54, 103, 196) 100%);
+   height: 100dvh;
+   justify-content: center;
+   align-items: center;
+}
+
+@keyframes girar {
+   from {
+      transform: rotate(0deg)
+   } to {
+      transform: rotate(360deg);
+   }
+}
+
+.iconLoading{
+   animation: girar linear infinite 3s;
+}
