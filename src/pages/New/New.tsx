@@ -6,6 +6,8 @@ import React, { useState, useEffect } from "react";
 import { collection, getDocs, addDoc } from "firebase/firestore";
 import { db } from "../../services/firebaseConnection";
 import { toast } from "react-toastify";
+import { useAuth } from "../../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 interface customers {
    id: string,
@@ -15,13 +17,15 @@ interface customers {
 export default function New() {
 
 
-   const [status, setStatus] = useState<'Aberto' | 'Progresso' | 'Atendido'>('Aberto')
+   const [status, setStatus] = useState<'Aberto' | 'Progresso' | 'Concluido' | 'Cancelado'>('Aberto')
    const [assunto, setAssunto] = useState<'Suporte' | 'Visita Tecnica' | 'Financeiro'>('Suporte')
    const [customers, setCustomers] = useState<customers[]>([])
    const [loadingCustomers, setLoadingCustomers] = useState(true)
    const [selectCustomers, setSelectCustomers] = useState(0)
    const [description, setDescription] = useState('')
-
+   const { user } = useAuth()
+   const navigate = useNavigate()
+   
    const listRef = collection(db, "@customers")
 
    useEffect(() => {
@@ -54,7 +58,7 @@ export default function New() {
 
 
    function handleOptionChange(e: React.ChangeEvent<HTMLInputElement>) {
-      setStatus(e.target.value as 'Aberto' | 'Progresso' | 'Atendido')
+      setStatus(e.target.value as 'Aberto' | 'Progresso' | 'Concluido' | 'Cancelado')
    }
 
    function handleChangeSelect(e: React.ChangeEvent<HTMLSelectElement>) {
@@ -65,12 +69,14 @@ export default function New() {
       setSelectCustomers(Number(e.target.value))
    }
 
-   async function handleNewChamado(e: React.SubmitEvent<HTMLFormElement>) {
+   async function handleNewCall(e: React.SubmitEvent<HTMLFormElement>) {
       e.preventDefault()
 
       try {
 
          await addDoc(collection(db, '@calls'), {
+            created: new Date(),
+            userId: user?.uid,
             cliente: customers[selectCustomers].nomeFantasia,
             assunto: assunto,
             status: status,
@@ -82,7 +88,7 @@ export default function New() {
          setDescription('')
          setStatus('Aberto')
          setAssunto('Suporte')
-
+         navigate('/dashboard')
       } catch (error) {
          console.log(`Não foi possivel registrar o chamado : ${error}`)
          toast.error('Não foi possivel registrar o chamado!')
@@ -96,11 +102,11 @@ export default function New() {
          <div className="content">
             <TitleBar icon={FiPlusCircle} title="Novo Chamado" />
 
-            <form onSubmit={handleNewChamado} className="formContainerNew">
+            <form onSubmit={handleNewCall} className="formContainerNew">
                <label>Cliente</label>
 
                {loadingCustomers ?
-                  <input type="text" disabled={true} placeholder="CARREGANDO..." style={{width:"fit-content", padding:'10px'}}/> :
+                  <input type="text" disabled={true} placeholder="CARREGANDO..." style={{ width: "fit-content", padding: '10px' }} /> :
                   <select value={selectCustomers} onChange={handleSelectCustomers}>
                      {customers.map((item, index) => (
                         <option key={index} value={index}>{item.nomeFantasia}</option>
@@ -128,14 +134,18 @@ export default function New() {
                      Progresso
                   </label>
                   <label>
-                     <input type="radio" name="radio" value="Atendido" onChange={handleOptionChange} checked={status === 'Atendido'} />
-                     Atendido
+                     <input type="radio" name="radio" value="Concluido" onChange={handleOptionChange} checked={status === 'Concluido'} />
+                     Concluido
+                  </label>
+                  <label>
+                     <input type="radio" name="radio" value="Cancelado" onChange={handleOptionChange} checked={status === 'Cancelado'} />
+                     Cancelado
                   </label>
                </div>
 
                <label>Complemento</label>
                <textarea value={description} onChange={(e) => setDescription(e.target.value)}
-               placeholder="Descreva seu problema (opcional)." />
+                  placeholder="Descreva seu problema (opcional)." />
 
                <button type="submit" className="btNewChamado">Criar novo chamado</button>
             </form>
