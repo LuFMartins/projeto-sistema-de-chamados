@@ -1,17 +1,20 @@
 import { Navigate } from "react-router-dom"
 import { useAuth } from "../contexts/AuthContext"
+import LoadingPage from "../pages/LoadingPage/LoadingPage"
 
 export default function Private({ children }: { children: React.ReactNode }) {
 
-   const {loading, signed} = useAuth() 
+    const { loading, signed } = useAuth()
 
-   if(loading) {
-      return(<div>Carregando...</div>)
-   }
+    if (loading) {
+        return (
+            <LoadingPage />
+        )
+    }
 
-   if(!signed) {
-      return <Navigate to="/" />
-   }
+    if (!signed) {
+        return <Navigate to="/" />
+    }
 
     return (
         <div>
