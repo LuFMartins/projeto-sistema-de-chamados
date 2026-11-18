@@ -3,11 +3,11 @@ import HeaderBar from "../../components/HeaderBar/HeaderBar";
 import TitleBar from "../../components/TitleBar/TitleBar";
 import "./new.css"
 import React, { useState, useEffect } from "react";
-import { collection, getDocs, addDoc } from "firebase/firestore";
+import { collection, getDocs, addDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../services/firebaseConnection";
 import { toast } from "react-toastify";
 import { useAuth } from "../../contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 interface customers {
    id: string,
@@ -16,16 +16,47 @@ interface customers {
 
 export default function New() {
 
-
-   const [status, setStatus] = useState<'Aberto' | 'Progresso' | 'Concluido' | 'Cancelado'>('Aberto')
-   const [assunto, setAssunto] = useState<'Suporte' | 'Visita Tecnica' | 'Financeiro'>('Suporte')
-   const [customers, setCustomers] = useState<customers[]>([])
-   const [loadingCustomers, setLoadingCustomers] = useState(true)
-   const [selectCustomers, setSelectCustomers] = useState(0)
-   const [description, setDescription] = useState('')
    const { user } = useAuth()
    const navigate = useNavigate()
-   
+   const { id } = useParams<{ id: string }>()
+   const isEditing = !!id // mesma coisa que Boolean(id) - convertem o valor em 'true' ou 'false'
+
+   const [customers, setCustomers] = useState<customers[]>([])
+   const [status, setStatus] = useState<'Aberto' | 'Progresso' | 'Concluido' | 'Cancelado'>('Aberto')
+   const [assunto, setAssunto] = useState<'Suporte' | 'Visita Tecnica' | 'Financeiro'>('Suporte')
+   const [description, setDescription] = useState('')
+   const [selectCustomersId, setSelectCustomersId] = useState('')
+   const [loadingCustomers, setLoadingCustomers] = useState(true)
+
+   useEffect(() => {
+      async function loadCall() {
+         if (!id) {
+            return;
+         }
+
+         const dadosRef = doc(db, "@calls", id)
+         const snapshot = await getDoc(dadosRef)
+
+         if (!snapshot.exists()) {
+            navigate('/dashboard')
+            toast.dark('Chamado não encontrado!')
+            return;
+         }
+
+         const data = snapshot.data()
+
+         setSelectCustomersId(data.clienteId)
+         setAssunto(data.assunto)
+         setStatus(data.status)
+         setDescription(data.complemento)         
+         
+      }
+
+      
+      loadCall()
+      
+   }, [id])
+
    const listRef = collection(db, "@customers")
 
    useEffect(() => {
@@ -66,29 +97,52 @@ export default function New() {
    }
 
    function handleSelectCustomers(e: React.ChangeEvent<HTMLSelectElement>) {
-      setSelectCustomers(Number(e.target.value))
+      setSelectCustomersId(e.target.value)
    }
 
    async function handleNewCall(e: React.SubmitEvent<HTMLFormElement>) {
       e.preventDefault()
 
+      const selectedCustomer = customers.find(
+         (customer) => customer.id === selectCustomersId
+      )
+
+      if (!selectedCustomer) {
+         toast.error("Selecione um cliente válido!");
+         return;
+      }
+
+      const callData = {
+         clienteId: selectedCustomer.id,
+         clienteName: selectedCustomer.nomeFantasia,
+         assunto,
+         status,
+         complemento: description.trim() || null
+      }
+
       try {
 
-         await addDoc(collection(db, '@calls'), {
-            created: new Date(),
-            userId: user?.uid,
-            cliente: customers[selectCustomers].nomeFantasia,
-            assunto: assunto,
-            status: status,
-            complemento: description.trim() === '' ? null : description
-         })
+         if (isEditing && id) {
+            // Atualizar chamado existente
+            await updateDoc(doc(db, "@calls", id), callData)
 
-         toast.success("Chamado registrado com sucesso!")
-         setSelectCustomers(0)
-         setDescription('')
-         setStatus('Aberto')
-         setAssunto('Suporte')
-         navigate('/dashboard')
+            toast.success('Chamado atualizado com sucesso!')
+         } else {
+            // Criar novo chamado
+            await addDoc(collection(db, '@calls'), {
+               ...callData,
+               userId: user?.uid,
+               created: new Date()
+            })
+
+            toast.success("Chamado registrado com sucesso!")
+            setSelectCustomersId('')
+            setDescription('')
+            setStatus('Aberto')
+            setAssunto('Suporte')
+            navigate('/dashboard')
+         }
+
       } catch (error) {
          console.log(`Não foi possivel registrar o chamado : ${error}`)
          toast.error('Não foi possivel registrar o chamado!')
@@ -107,9 +161,10 @@ export default function New() {
 
                {loadingCustomers ?
                   <input type="text" disabled={true} placeholder="CARREGANDO..." style={{ width: "fit-content", padding: '10px' }} /> :
-                  <select value={selectCustomers} onChange={handleSelectCustomers}>
-                     {customers.map((item, index) => (
-                        <option key={index} value={index}>{item.nomeFantasia}</option>
+                  <select value={selectCustomersId} onChange={handleSelectCustomers}>
+                     <option value="">Selecione um cliente</option>
+                     {customers.map((item) => (
+                        <option key={item.id} value={item.id}>{item.nomeFantasia}</option>
                      ))}
                   </select>
                }
@@ -147,7 +202,7 @@ export default function New() {
                <textarea value={description} onChange={(e) => setDescription(e.target.value)}
                   placeholder="Descreva seu problema (opcional)." />
 
-               <button type="submit" className="btNewChamado">Criar novo chamado</button>
+               <button type="submit" className="btNewChamado">{id ? 'Editar Chamado' : 'Criar Chamado'}</button>
             </form>
          </div>
 
