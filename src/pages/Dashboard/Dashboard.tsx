@@ -4,7 +4,16 @@ import { FiEdit2, FiMessageSquare, FiPlus, FiSearch } from 'react-icons/fi'
 import { Link, NavLink } from 'react-router-dom'
 import "./dashboard.css"
 import { useEffect, useState } from 'react'
-import { getDocs, collection, query, orderBy, limit } from 'firebase/firestore'
+import {
+   getDocs,
+   collection,
+   query,
+   orderBy,
+   limit,
+   startAfter,
+   type QueryDocumentSnapshot,
+   type DocumentData
+} from 'firebase/firestore'
 import { db } from '../../services/firebaseConnection'
 import { Timestamp } from 'firebase/firestore'
 
@@ -17,44 +26,68 @@ interface CallsProps {
    id: string
 }
 
+const PAGE_SIZE = 10
+
+async function fetchCalls(lastDoc: QueryDocumentSnapshot<DocumentData> | null = null) {
+   const ref = collection(db, '@calls')
+
+   const q = lastDoc ? query(ref, orderBy('created', 'desc'), startAfter(lastDoc), limit(PAGE_SIZE + 1)) : query(ref, orderBy('created', 'desc'), limit(PAGE_SIZE + 1))
+
+   const querySnap = await getDocs(q)
+
+   const docs = querySnap.docs.slice(0, PAGE_SIZE)
+
+   const lista: CallsProps[] = docs.map((documento) => {
+      const dado = documento.data()
+
+      return {
+         id: documento.id,
+         cliente: dado.clienteName,
+         assunto: dado.assunto,
+         complemento: dado.complemento ?? null,
+         status: dado.status,
+         created: dado.created
+      }
+   })
+
+   return {
+      lista,
+      lastDoc: docs[docs.length - 1] ?? null,
+      hasMore: querySnap.docs.length > PAGE_SIZE
+   }
+}
+
 export default function Dashboard() {
 
    const [calls, setCalls] = useState<CallsProps[]>([])
    const [loading, setLoading] = useState(true)
-   
+
+   //indica que estamos carregando mais chamados
+   const [loadingMore, setLoadingMore] = useState(false)
+
+   //Armazena o último documento carregado
+   const [lastDoc, setLastDoc] = useState<QueryDocumentSnapshot<DocumentData> | null>(null)
+
+   //Indica se existem mais chamados
+   const [hasMore, setHasMore] = useState(false)
+
    const [isEmpty, setIsEmpty] = useState(false)
 
    useEffect(() => {
       async function handleCalls() {
-
-         const ref = collection(db, "@calls")
-         const q = query(ref, orderBy('created', 'desc'), limit(10))
-
          try {
-            const querySnap = await getDocs(q)
-            console.log(querySnap.docs)
 
-            if(querySnap.docs.length === 0){
-               throw new Error('Nenhum chamado encontrado!')
-            }
+            const result = await fetchCalls()
+            console.log(result.lastDoc.data())
 
-            const lista: CallsProps[] = querySnap.docs.map((documento) => {
-
-               const dado = documento.data()
-               return {
-                  cliente: dado.clienteName,
-                  assunto: dado.assunto,
-                  complemento: dado.complemento,
-                  status: dado.status,
-                  created: dado.created,
-                  id: documento.id
-               }
-            })
-            setCalls(lista)
+            setCalls(result.lista)
+            setLastDoc(result.lastDoc)
+            setHasMore(result.hasMore)
+            setIsEmpty(result.lista.length === 0)
             setLoading(false)
 
          } catch (error) {
-            if (error instanceof Error){
+            if (error instanceof Error) {
                console.log(error.message)
             }
             setCalls([])
@@ -66,6 +99,26 @@ export default function Dashboard() {
 
       handleCalls()
    }, [])
+
+   async function handleLoadMore() {
+      if (!lastDoc || !hasMore || loadingMore) return;
+
+      setLoadingMore(true)
+
+      try {
+         const result = await fetchCalls(lastDoc)
+         console.log(result.lastDoc.data())
+
+         setCalls((prev) => [...prev, ...result.lista])
+
+         setLastDoc(result.lastDoc)
+         setHasMore(result.hasMore)
+      } catch (error) {
+         console.error("Erro ao carregar mais chamados:", error);
+      } finally {
+         setLoadingMore(false)
+      }
+   }
 
 
    if (loading) {
@@ -152,6 +205,16 @@ export default function Dashboard() {
 
                         </tbody>
                      </table>
+                     {hasMore && (
+                        <button
+                           type='button'
+                           className='btLoadMore'
+                           onClick={handleLoadMore}
+                           disabled={loadingMore}
+                        >
+                           {loadingMore ? 'Carregando...' : 'Carregar mais chamados'}
+                        </button>
+                     )}
                   </>
                )
                }

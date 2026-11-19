@@ -119,6 +119,26 @@ td[data-label='Cancelado'] span {
    font-weight: bold;
 }
 
+.btLoadMore {
+  display: block;
+  margin: 24px auto;
+  padding: 12px 24px;
+  background: #3583f6;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btLoadMore:hover {
+  background: #2563c9;
+}
+
+.btLoadMore:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 @media screen and (max-width:600px) {
    table {
       border: 0px;
@@ -148,7 +168,7 @@ td[data-label='Cancelado'] span {
    }
 
    table td::before {
-      content: attr(campo-oi);
+      content: attr(data-label);
       float: left;
       font-weight: bold;
       text-transform: uppercase;
