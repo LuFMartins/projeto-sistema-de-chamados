@@ -17,9 +17,10 @@ import {
 } from 'firebase/firestore'
 import { db } from '../../services/firebaseConnection'
 import { Timestamp } from 'firebase/firestore'
+import Modal from '../../components/Modal/Modal'
 
 // Define a estrutura dos dados de cada chamado
-interface CallsProps {
+export interface CallsProps {
    cliente: string,
    assunto: string,
    status: string,
@@ -90,6 +91,11 @@ export default function Dashboard() {
    // Indica se a consulta inicial retornou uma lista vazia
    const [isEmpty, setIsEmpty] = useState(false)
 
+   // Serve para abrir e fechar o modal
+   const [modal, setModal] = useState(false)
+   //Pega os detalhes do item especifico
+   const [detail, setDetail] = useState<CallsProps | null>(null)
+
    // Busca os primeiros chamados ao carregar o componente
    useEffect(() => {
       async function handleCalls() {
@@ -156,6 +162,15 @@ export default function Dashboard() {
          // Libera o botão após finalizar a consulta
          setLoadingMore(false)
       }
+   }
+
+   function getItemDetail(item: CallsProps){
+      setDetail(item)
+      setModal(true)
+   }
+
+   function fecharModal(){
+      setModal(false)
    }
 
    // Exibe uma mensagem enquanto os primeiros chamados são buscados
@@ -235,7 +250,7 @@ export default function Dashboard() {
 
                                  <td>
                                     {/* Botão reservado para visualizar o chamado */}
-                                    <button className='action' style={{ backgroundColor: "#3583f6" }}>
+                                    <button onClick={() => getItemDetail(item)} className='action' style={{ backgroundColor: "#3583f6" }}>
                                        <FiSearch color='white' size={15} />
                                     </button>
 
@@ -268,6 +283,10 @@ export default function Dashboard() {
             </div>
 
          </div >
+               
+         {modal && (
+            <Modal modal={fecharModal} callDetail={detail}/>
+         )}
 
       </div >
    )
