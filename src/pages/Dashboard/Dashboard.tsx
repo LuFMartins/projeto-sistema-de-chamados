@@ -1,3 +1,4 @@
+
 import HeaderBar from '../../components/HeaderBar/HeaderBar'
 import TitleBar from '../../components/TitleBar/TitleBar'
 import { FiEdit2, FiMessageSquare, FiPlus, FiSearch } from 'react-icons/fi'
@@ -17,6 +18,7 @@ import {
 import { db } from '../../services/firebaseConnection'
 import { Timestamp } from 'firebase/firestore'
 
+// Define a estrutura dos dados de cada chamado
 interface CallsProps {
    cliente: string,
    assunto: string,
@@ -26,18 +28,28 @@ interface CallsProps {
    id: string
 }
 
+// Quantidade de chamados exibidos por consulta
 const PAGE_SIZE = 10
 
+// Busca uma página de chamados no Firestore
+// lastDoc indica a partir de qual documento a busca deve continuar
 async function fetchCalls(lastDoc: QueryDocumentSnapshot<DocumentData> | null = null) {
    const ref = collection(db, '@calls')
 
+   // Se existir lastDoc, busca os próximos chamados
+   // Caso contrário, começa pelo primeiro documento
+   // Busca um documento extra para verificar se existe outra página
    const q = lastDoc ? query(ref, orderBy('created', 'desc'), startAfter(lastDoc), limit(PAGE_SIZE + 1)) : query(ref, orderBy('created', 'desc'), limit(PAGE_SIZE + 1))
 
+   // Executa a consulta no Firestore
    const querySnap = await getDocs(q)
 
+   // Seleciona somente os 10 primeiros documentos
    const docs = querySnap.docs.slice(0, PAGE_SIZE)
 
+   // Converte os documentos do Firestore em objetos CallsProps
    const lista: CallsProps[] = docs.map((documento) => {
+      // Recupera os campos armazenados no documento
       const dado = documento.data()
 
       return {
@@ -50,6 +62,7 @@ async function fetchCalls(lastDoc: QueryDocumentSnapshot<DocumentData> | null = 
       }
    })
 
+   // Retorna os chamados, o último documento e se existem mais registros
    return {
       lista,
       lastDoc: docs[docs.length - 1] ?? null,
@@ -59,7 +72,10 @@ async function fetchCalls(lastDoc: QueryDocumentSnapshot<DocumentData> | null = 
 
 export default function Dashboard() {
 
+   // Armazena os chamados que serão exibidos na tabela
    const [calls, setCalls] = useState<CallsProps[]>([])
+
+   // Controla o carregamento inicial da página
    const [loading, setLoading] = useState(true)
 
    //indica que estamos carregando mais chamados
@@ -71,28 +87,41 @@ export default function Dashboard() {
    //Indica se existem mais chamados
    const [hasMore, setHasMore] = useState(false)
 
+   // Indica se a consulta inicial retornou uma lista vazia
    const [isEmpty, setIsEmpty] = useState(false)
 
+   // Busca os primeiros chamados ao carregar o componente
    useEffect(() => {
       async function handleCalls() {
          try {
 
+            // Busca a primeira página, sem informar um documento anterior
             const result = await fetchCalls()
-            console.log(result.lastDoc.data())
 
+            // Armazena os chamados encontrados
             setCalls(result.lista)
+
+            // Guarda o último documento para a próxima consulta
             setLastDoc(result.lastDoc)
+
+            // Verifica se existem mais chamados
             setHasMore(result.hasMore)
+
+            // Verifica se a lista retornada está vazia
             setIsEmpty(result.lista.length === 0)
             setLoading(false)
 
          } catch (error) {
+            // Exibe a mensagem do erro no console
             if (error instanceof Error) {
                console.log(error.message)
             }
+
+            // Limpa a lista e indica que ela está vazia
             setCalls([])
             setIsEmpty(true)
          } finally {
+            // Finaliza o carregamento, mesmo se ocorrer um erro
             setLoading(false)
          }
       }
@@ -100,27 +129,36 @@ export default function Dashboard() {
       handleCalls()
    }, [])
 
+   // Busca mais chamados quando o usuário clica no botão
    async function handleLoadMore() {
+
+      // Impede a busca se não houver cursor, mais chamados
+      // ou se outra consulta já estiver em andamento
       if (!lastDoc || !hasMore || loadingMore) return;
 
+      // Ativa o estado de carregamento do botão
       setLoadingMore(true)
 
       try {
+         // Busca a próxima página a partir do último documento
          const result = await fetchCalls(lastDoc)
-         console.log(result.lastDoc.data())
 
+         // Adiciona os novos chamados aos que já estão na tabela
          setCalls((prev) => [...prev, ...result.lista])
 
+         // Atualiza o cursor e a informação sobre novas páginas
          setLastDoc(result.lastDoc)
          setHasMore(result.hasMore)
       } catch (error) {
+         // Exibe possíveis erros durante a consulta
          console.error("Erro ao carregar mais chamados:", error);
       } finally {
+         // Libera o botão após finalizar a consulta
          setLoadingMore(false)
       }
    }
 
-
+   // Exibe uma mensagem enquanto os primeiros chamados são buscados
    if (loading) {
       return (
          <div className='appLayout'>
@@ -148,10 +186,9 @@ export default function Dashboard() {
                title="Tickets"
             />
 
-
             <div>
 
-
+               {/* Exibe uma mensagem se não houver chamados */}
                {isEmpty ? (
                   <div className='noCalls'>
                      <span>Nenhum chamado encontrado!</span>
@@ -163,12 +200,13 @@ export default function Dashboard() {
                ) : (
 
                   <>
-
+                     {/* Botão para cadastrar um novo chamado */}
                      <NavLink to="/new" className='btNovoChamado'>
                         <FiPlus color='white' size={25} />
                         novo chamado
                      </NavLink>
 
+                     {/* Tabela com os chamados encontrados */}
                      <table>
                         <thead>
                            <tr>
@@ -181,6 +219,7 @@ export default function Dashboard() {
                         </thead>
                         <tbody>
 
+                           {/* Percorre a lista e cria uma linha para cada chamado */}
                            {calls?.map((item) => (
                               <tr key={item.id}>
                                  <td data-label="Cliente">{item.cliente}</td>
@@ -190,12 +229,17 @@ export default function Dashboard() {
                                        {item.status}
                                     </span>
                                  </td>
+
+                                 {/* Converte o Timestamp para uma data legível */}
                                  <td data-label="Cadastrado em">{item.created.toDate().toLocaleString('pt-BR')}</td>
 
                                  <td>
+                                    {/* Botão reservado para visualizar o chamado */}
                                     <button className='action' style={{ backgroundColor: "#3583f6" }}>
                                        <FiSearch color='white' size={15} />
                                     </button>
+
+                                    {/* Abre a página de edição usando o ID do chamado */}
                                     <Link to={`/new/${item.id}`} className='action' style={{ backgroundColor: "#f6a935" }}>
                                        <FiEdit2 color='white' size={15} />
                                     </Link >
@@ -205,6 +249,8 @@ export default function Dashboard() {
 
                         </tbody>
                      </table>
+
+                     {/* Exibe o botão somente se existirem mais chamados */}
                      {hasMore && (
                         <button
                            type='button'
@@ -212,6 +258,7 @@ export default function Dashboard() {
                            onClick={handleLoadMore}
                            disabled={loadingMore}
                         >
+                           {/* Altera o texto enquanto os próximos chamados são buscados */}
                            {loadingMore ? 'Carregando...' : 'Carregar mais chamados'}
                         </button>
                      )}
@@ -219,7 +266,6 @@ export default function Dashboard() {
                )
                }
             </div>
-
 
          </div >
 
