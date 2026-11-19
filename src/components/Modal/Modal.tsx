@@ -20,7 +20,7 @@ export default function Modal({modal, callDetail} : ModalProps) {
 
             {/* Botão que executa a função de fechar o modal */}
             <button onClick={modal} className="btFechar">
-               <FiXCircle className="asd" size={40} />
+               <FiXCircle className="btFechar" size={40} />
             </button>
 
             {/* Exibe as informações do chamado selecionado */}
