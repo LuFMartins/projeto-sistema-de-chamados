@@ -1,3 +1,4 @@
+
 import HeaderBar from '../../components/HeaderBar/HeaderBar'
 import TitleBar from '../../components/TitleBar/TitleBar'
 import { FiUser } from 'react-icons/fi'
@@ -8,79 +9,100 @@ import { db } from '../../services/firebaseConnection'
 
 export default function Customers() {
 
-   const [nomeEmpresa, setNomeEmpresa] = useState('')
-   const [cnpj, setCnpj] = useState('')
-   const [endereco, setEndereco] = useState('')
-   const [saving, setSaving] = useState(false)
+  // Armazena as informações preenchidas no formulário
+  const [nomeEmpresa, setNomeEmpresa] = useState('')
+  const [cnpj, setCnpj] = useState('')
+  const [endereco, setEndereco] = useState('')
 
-   async function handleCreateCustomers(e: React.SubmitEvent<HTMLFormElement>) {
-      e.preventDefault()
+  // Controla o estado de salvamento do cliente
+  const [saving, setSaving] = useState(false)
 
-      if (nomeEmpresa.trim() === "" || cnpj.trim() === "" || endereco.trim() === "") {
-         toast.info('Preencha todos os campos!')
-         return;
-      }
+  // Executa o cadastro de um novo cliente
+  async function handleCreateCustomers(e: React.SubmitEvent<HTMLFormElement>) {
+    // Impede o recarregamento da página ao enviar o formulário
+    e.preventDefault()
 
-      setSaving(true)
+    // Verifica se todos os campos foram preenchidos
+    if (nomeEmpresa.trim() === "" || cnpj.trim() === "" || endereco.trim() === "") {
+      toast.info('Preencha todos os campos!')
+      return;
+    }
 
-      try {
-         await addDoc(collection(db, '@customers'), {
-            nomeFantasia: nomeEmpresa,
-            cnpj: cnpj,
-            endereco: endereco
-         })
+    // Indica que o cadastro está sendo realizado
+    setSaving(true)
 
-         toast.success('Registro realizado com sucesso!')
+    try {
+      // Adiciona um novo cliente à coleção @customers no Firestore
+      await addDoc(collection(db, '@customers'), {
+        nomeFantasia: nomeEmpresa,
+        cnpj: cnpj,
+        endereco: endereco
+      })
 
-         setNomeEmpresa('')
-         setCnpj('')
-         setEndereco('')
-         setSaving(false)
+      // Exibe uma mensagem de sucesso
+      toast.success('Registro realizado com sucesso!')
 
-      } catch (error) {
-         toast.error('Não foi possivel cadastrar empresa!')
-         console.log(`ERRO: ${error}`)
-      }
-   }
+      // Limpa os campos após o cadastro
+      setNomeEmpresa('')
+      setCnpj('')
+      setEndereco('')
 
-   return (
-      <div className='appLayout'>
-         <HeaderBar />
+      // Finaliza o estado de salvamento
+      setSaving(false)
 
-         <div className='content'>
+    } catch (error) {
+      // Exibe uma mensagem caso ocorra um erro no cadastro
+      toast.error('Não foi possivel cadastrar empresa!')
+      console.log(`ERRO: ${error}`)
+    }
+  }
 
-            <TitleBar
-               icon={FiUser}
-               title="Clientes"
-            />
+  return (
+    <div className='appLayout'>
+      {/* Menu de navegação */}
+      <HeaderBar />
 
-            <div className='formContainer'>
+      <div className='content'>
 
-               <form className='formUser' onSubmit={handleCreateCustomers}>
+        {/* Título da página */}
+        <TitleBar
+          icon={FiUser}
+          title="Clientes"
+        />
 
-                  <label>Nome Fantasia</label>
-                  <input type="text" placeholder='Nome da empresa' value={nomeEmpresa} onChange={(e) => setNomeEmpresa(e.target.value)} />
+        <div className='formContainer'>
 
-                  <label>CNPJ</label>
-                  <input type="text" placeholder='Digite o CNPJ' value={cnpj} onChange={(e) => setCnpj(e.target.value)} />
+          {/* Formulário de cadastro de clientes */}
+          <form className='formUser' onSubmit={handleCreateCustomers}>
 
-                  <label>Endereço</label>
-                  <input type="text" placeholder='Endereço da empresa' value={endereco} onChange={(e) => setEndereco(e.target.value)} />
+            {/* Campo para o nome fantasia da empresa */}
+            <label>Nome Fantasia</label>
+            <input type="text" placeholder='Nome da empresa' value={nomeEmpresa} onChange={(e) => setNomeEmpresa(e.target.value)} />
 
-                  <button
-                     type='submit'
-                     className='btSaveInfo'
-                     disabled={saving ? true : false}
-                  >
-                     {saving ? 'Salvando...' : 'Salvar'}
-                  </button>
+            {/* Campo para o CNPJ */}
+            <label>CNPJ</label>
+            <input type="text" placeholder='Digite o CNPJ' value={cnpj} onChange={(e) => setCnpj(e.target.value)} />
 
-               </form>
+            {/* Campo para o endereço */}
+            <label>Endereço</label>
+            <input type="text" placeholder='Endereço da empresa' value={endereco} onChange={(e) => setEndereco(e.target.value)} />
 
-            </div>
+            {/* Botão de cadastro, desabilitado durante o salvamento */}
+            <button
+              type='submit'
+              className='btSaveInfo'
+              disabled={saving ? true : false}
+            >
+              {/* Altera o texto conforme o estado de salvamento */}
+              {saving ? 'Salvando...' : 'Salvar'}
+            </button>
 
-         </div>
+          </form>
+
+        </div>
 
       </div>
-   )
+
+    </div>
+  )
 }
