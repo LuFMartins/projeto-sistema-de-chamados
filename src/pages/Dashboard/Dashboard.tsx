@@ -239,7 +239,7 @@ export default function Dashboard() {
                               <tr key={item.id}>
                                  <td data-label="Cliente">{item.cliente}</td>
                                  <td data-label="Assunto">{item.assunto}</td>
-                                 <td data-label={item.status}>
+                                 <td data-cor={item.status} data-label="Status">
                                     <span className='status'>
                                        {item.status}
                                     </span>

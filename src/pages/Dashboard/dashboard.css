@@ -87,7 +87,7 @@ td span{
    user-select: none;
 }
 
-td[data-label='Aberto'] span {
+td[data-cor='Aberto'] span {
    background-color: rgb(72, 140, 218);
    border-radius: 20px;
    padding: 10px;
@@ -95,7 +95,7 @@ td[data-label='Aberto'] span {
    font-weight: bold;
 }
 
-td[data-label='Concluido'] span {
+td[data-cor='Concluido'] span {
    background-color: rgb(72, 218, 91);
    border-radius: 20px;
    padding: 10px;
@@ -103,7 +103,7 @@ td[data-label='Concluido'] span {
    font-weight: bold;
 }
 
-td[data-label='Progresso'] span {
+td[data-cor='Progresso'] span {
    background-color: rgb(218, 191, 72);
    border-radius: 20px;
    padding: 10px;
@@ -111,7 +111,7 @@ td[data-label='Progresso'] span {
    font-weight: bold;
 }
 
-td[data-label='Cancelado'] span {
+td[data-cor='Cancelado'] span {
    background-color: rgb(218, 106, 72);
    border-radius: 20px;
    padding: 10px;
