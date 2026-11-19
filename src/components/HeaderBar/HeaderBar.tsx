@@ -2,7 +2,7 @@ import { NavLink } from "react-router-dom"
 import { useAuth } from "../../contexts/AuthContext"
 import "./header.css"
 import { FiHome, FiUser, FiSettings } from 'react-icons/fi'
-import logoBranca500 from '../../assets/logoBranca500.png'
+import logoBranca from '../../assets/logoBranca.png'
 
 export default function HeaderBar() {
 
@@ -11,7 +11,7 @@ export default function HeaderBar() {
    return (
       <header>
          <div className="topHeader">
-            <img src={logoBranca500} alt="Logo" width={200}/>
+            <img src={logoBranca} alt="Logo" width={200}/>
             <nav>
             
                <NavLink to="/dashboard" >

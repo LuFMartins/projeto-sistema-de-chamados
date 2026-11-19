@@ -1,4 +1,4 @@
-import logo from "../../assets/logo-sistema-de-chamados.png"
+import logo from "../../assets/logo.png"
 import { useState } from "react"
 import { Link } from "react-router-dom"
 import { useAuth } from "../../contexts/AuthContext"
