@@ -44,7 +44,7 @@
 }
 
 .containerModal main p {
-   white-space: pre-wrap;
+   overflow-wrap: anywhere;
    line-height: 150%;
 }
 
